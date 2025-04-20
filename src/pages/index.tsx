@@ -1,6 +1,6 @@
 import Typography from "@mui/material/Typography";
 import { PageContainer } from "@toolpad/core";
-import { Stack, Button, Skeleton, IconButton } from "@mui/material";
+import { Stack, Button, Skeleton, IconButton, Fab } from "@mui/material";
 import { Outlet, useNavigate } from "react-router";
 import ListTileView from "../components/ListTileView";
 import { useSession } from "../SessionContext";
@@ -57,26 +57,29 @@ export default function DashboardPage() {
     );
   }
 
-  const ownedLists = lists.filter((list) => list.owner === session?.user?.id!);
-  const invitedLists = lists.filter((list) => (list.owner != session?.user?.id!)); // No need to check if user is invited, if they are not the owner they must be invited, as the API will not return lists the user is not asociated with
+  const ownedLists = lists.filter((list) => list.owner === session?.user?.id! && !list.archived);
+  const invitedLists = lists.filter((list) => list.owner != session?.user?.id! && !list.archived); // No need to check if user is invited, if they are not the owner they must be invited, as the API will not return lists the user is not asociated with
+  const archivedLists = lists.filter((list) => list.archived);
 
   return (
     <PageContainer>
       <Stack spacing={4}>
         {ownedLists.length > 0 ? (
-          <ListTileView lists={ownedLists} titleText="Your Lists" />
+          <ListTileView lists={ownedLists} titleText="Your Lists"/>
         ) : (
-          <Typography>No lists found.</Typography>
+          <Typography>No lists found</Typography>
         )}
         {invitedLists.length > 0 ? (
-          <ListTileView lists={invitedLists} titleText="Invited Lists" />
-        ) : (
-          <Typography>No lists found.</Typography>
-        )}
+          <ListTileView lists={invitedLists} titleText="Invited Lists"/>
+        ) : null}
+        {archivedLists.length > 0 ? (
+          <ListTileView lists={archivedLists} titleText="Archived Lists" defaultCollapsed={true}/>
+        ) : null}
       </Stack>
       <Outlet />
-      <IconButton 
+      <Fab 
       size="large" 
+      color="primary"
       onClick={() => {
         const newListId = addList();
         navigate(`/list/${newListId}`);
@@ -85,13 +88,9 @@ export default function DashboardPage() {
         position: "absolute",
         right: "3%",
         bottom: "5%",
-        backgroundColor: indigo[500],
-        '&:hover': {
-          backgroundColor: indigo[700],
-        },
       }}>
-        <Add fontSize="inherit"/>
-      </IconButton>
+        <Add />
+      </Fab>
     </PageContainer>
   );
 }
