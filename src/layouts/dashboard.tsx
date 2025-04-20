@@ -19,7 +19,39 @@ function ToolbarActionsAPI() {
 
   return (
     <Stack direction="row">
-      <Tooltip title="API Connection" enterDelay={1000}>
+      <ThemeSwitcher />
+    </Stack>
+  );
+}
+
+export default function Layout() {
+  const { session } = useSession();
+  const location = useLocation();
+
+  if (!session) {
+    // Add the `callbackUrl` search parameter
+    const redirectTo = `/sign-in?callbackUrl=${encodeURIComponent(location.pathname)}`;
+
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  return (
+    <DashboardLayout
+      slots={{
+        toolbarActions: ToolbarActionsAPI,
+      }}
+      hideNavigation
+      disableCollapsibleSidebar
+    >
+      <PageContainer>
+        <Outlet />
+      </PageContainer>
+    </DashboardLayout>
+  );
+}
+
+/* Just leaving this here, will move this somewhere else at some point
+<Tooltip title="API Connection" enterDelay={1000}>
         <div>
           <IconButton
             type="button"
@@ -57,33 +89,4 @@ function ToolbarActionsAPI() {
       >
         {selected ? <ApiIcon /> : <ApiOffIcon />}
       </ToggleButton>
-      <ThemeSwitcher />
-    </Stack>
-  );
-}
-
-export default function Layout() {
-  const { session } = useSession();
-  const location = useLocation();
-
-  if (!session) {
-    // Add the `callbackUrl` search parameter
-    const redirectTo = `/sign-in?callbackUrl=${encodeURIComponent(location.pathname)}`;
-
-    return <Navigate to={redirectTo} replace />;
-  }
-
-  return (
-    <DashboardLayout
-      slots={{
-        toolbarActions: ToolbarActionsAPI,
-      }}
-      hideNavigation
-      disableCollapsibleSidebar
-    >
-      <PageContainer>
-        <Outlet />
-      </PageContainer>
-    </DashboardLayout>
-  );
-}
+      */
