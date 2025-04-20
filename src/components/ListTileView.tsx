@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Stack, Typography, IconButton } from "@mui/material";
+import { Stack, Typography, IconButton, Divider, Collapse } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { styled } from "@mui/material/styles";
 import ListTile from "./ListTile";
 import { List } from "../ListContext";
 
@@ -10,6 +10,19 @@ interface ListTileViewProps {
   lists: List[];
   defaultCollapsed?: boolean;
 }
+
+// Styled IconButton with rotation animation
+const AnimatedIconButton = styled(IconButton)(({ theme }) => ({
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.short,
+  }),
+  "&.expanded": {
+    transform: "rotate(180deg)",
+  },
+  "&.collapsed": {
+    transform: "rotate(0deg)",
+  },
+}));
 
 export default function ListTileView({
   titleText,
@@ -24,22 +37,31 @@ export default function ListTileView({
 
   return (
     <Stack>
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={1}
+        onClick={toggleCollapse}
+        sx={{ cursor: "pointer" }}
+      >
         <Typography variant="h5">
           {titleText} {isCollapsed ? `(${lists.length})` : null}
         </Typography>
-        <IconButton onClick={toggleCollapse}>
-          {isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
-        </IconButton>
+        <Stack flexGrow={1} />
+        <AnimatedIconButton
+          className={isCollapsed ? "collapsed" : "expanded"}
+        >
+          <ExpandMoreIcon />
+        </AnimatedIconButton>
       </Stack>
-      <hr />
-      {!isCollapsed && (
+      <Divider sx={{ my: 1 }} />
+      <Collapse in={!isCollapsed}>
         <Stack direction="row" flexWrap="wrap" gap={2}>
           {lists.map((list) => (
             <ListTile key={list.listId} list={list} />
           ))}
         </Stack>
-      )}
+      </Collapse>
     </Stack>
   );
 }
