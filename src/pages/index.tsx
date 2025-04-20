@@ -1,17 +1,17 @@
-import * as React from "react";
 import Typography from "@mui/material/Typography";
 import { PageContainer } from "@toolpad/core";
-import { Stack, Button, Skeleton } from "@mui/material";
+import { Stack, Button, Skeleton, IconButton } from "@mui/material";
 import { Outlet, useNavigate } from "react-router";
-import { fetchAllLists, List } from "../ListContext";
 import ListTileView from "../components/ListTileView";
 import { useSession } from "../SessionContext";
 import { useLists } from "../ListsContext";
+import { Add } from "@mui/icons-material";
+import { indigo } from "@mui/material/colors";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { session } = useSession();
-  const { lists, loading, error } = useLists();
+  const { lists, addList, removeList, updateList, loading, error } = useLists();
 
   if (loading) {
     return (
@@ -58,11 +58,11 @@ export default function DashboardPage() {
   }
 
   const ownedLists = lists.filter((list) => list.owner === session?.user?.id!);
-  const invitedLists = lists.filter((list) => list.owner != session?.user?.id!);
+  const invitedLists = lists.filter((list) => (list.owner != session?.user?.id!)); // No need to check if user is invited, if they are not the owner they must be invited, as the API will not return lists the user is not asociated with
 
   return (
     <PageContainer>
-      <Stack spacing={2}>
+      <Stack spacing={4}>
         {ownedLists.length > 0 ? (
           <ListTileView lists={ownedLists} titleText="Your Lists" />
         ) : (
@@ -75,6 +75,23 @@ export default function DashboardPage() {
         )}
       </Stack>
       <Outlet />
+      <IconButton 
+      size="large" 
+      onClick={() => {
+        const newListId = addList();
+        navigate(`/list/${newListId}`);
+      }}
+      sx={{
+        position: "absolute",
+        right: "3%",
+        bottom: "5%",
+        backgroundColor: indigo[500],
+        '&:hover': {
+          backgroundColor: indigo[700],
+        },
+      }}>
+        <Add fontSize="inherit"/>
+      </IconButton>
     </PageContainer>
   );
 }
