@@ -6,7 +6,7 @@ import { SessionContext } from './SessionContext';
 import { ListsProvider } from './ListsContext';
 
 const BRANDING = {
-  title: 'Shopper Web Application',
+  title: 'Shopper Web',
 };
 
 export default function App() {
