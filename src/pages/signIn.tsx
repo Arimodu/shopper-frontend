@@ -44,12 +44,24 @@ function Subtitle() {
 export default function SignIn() {
   const { setSession } = useSession();
   const navigate = useNavigate();
+
+  const session = 
+  { user: {
+    id: "5629aaef-1a1e-4430-be02-9104cc7e5544",
+    name: "Arimodu Demo",
+    email: "demo@arimodu.dev",
+    image: "https://arimodu.dev/pfp.webp",
+  }};
+  setSession(session);
+  navigate("/", { replace: true });
+  return;
   return (
     <SignInPage
       providers={[{ id: "credentials", name: "Credentials" }]}
       signIn={async (provider, formData, callbackUrl) => {
         // Demo session
         try {
+          console.log(JSON.stringify(formData));
           const session = await fakeAsyncGetSession(formData);
           if (session) {
             setSession(session);

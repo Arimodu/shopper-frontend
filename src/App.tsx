@@ -3,6 +3,7 @@ import { ReactRouterAppProvider } from '@toolpad/core/react-router';
 import { Outlet, useNavigate } from 'react-router';
 import type { Session } from '@toolpad/core/AppProvider';
 import { SessionContext } from './SessionContext';
+import { ListsProvider } from './ListsContext';
 
 const BRANDING = {
   title: 'Shopper Web Application',
@@ -30,7 +31,9 @@ export default function App() {
         session={session}
         authentication={{ signIn, signOut }}
       >
-        <Outlet />
+        <ListsProvider>
+          <Outlet />
+        </ListsProvider>
       </ReactRouterAppProvider>
     </SessionContext.Provider>
   );
