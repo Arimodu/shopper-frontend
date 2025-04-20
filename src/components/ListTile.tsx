@@ -8,6 +8,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Checkbox,
 } from "@mui/material";
 import { useNavigate } from "react-router";
 import { List as ListCtx } from "../ListContext";
@@ -105,11 +106,25 @@ export default function ListTile({ list }: ListTileProps) {
         </div>
       ) : null}
       <List dense sx={{ flexGrow: 1, overflow: "hidden" }}>
-        {list.items.slice(0, 3).map((item) => (
-          <ListItem key={item.itemId}>
-            <ListItemText primary={item.content} />
-          </ListItem>
-        ))}
+        {list.items
+          .slice() // Create a copy to avoid mutating original array
+          .sort((a, b) =>
+            a.isComplete === b.isComplete ? 0 : a.isComplete ? 1 : -1
+          )
+          .slice(0, 3)
+          .map((item) => (
+            <ListItem key={item.itemId}>
+              <Checkbox
+                disabled={true}
+                checked={item.isComplete}
+                sx={{
+                  padding: 0,
+                  margin: 0,
+                }}
+              />
+              <ListItemText primary={item.content} />
+            </ListItem>
+          ))}
         {list.items.length > 3 && (
           <ListItem>
             <ListItemText primary={`... and ${list.items.length - 3} more`} />
