@@ -96,9 +96,10 @@ export function ListsProvider({ children }: { children: React.ReactNode }) {
 }
 
 const mockData: List[] = [
+  // List 1: Owned by user, not archived, multiple items, some completed
   {
-    listId: "f34e3fa8-e0d9-4637-ab6d-b86b3a23c515",
-    name: "Demo list",
+    listId: uuidv4(),
+    name: "Demo List 1",
     owner: "5629aaef-1a1e-4430-be02-9104cc7e5544",
     archived: false,
     invitedUsers: [
@@ -106,63 +107,100 @@ const mockData: List[] = [
       "209fa1ea-e5fa-4b89-83e4-0a3f0d4b7553",
     ],
     items: [
-      {
-        itemId: "3e7a5f11-78a0-4bbd-b5fe-9cc69a9d366f",
-        order: 1,
-        content: "Demo Item 1",
-        isComplete: false,
-      },
-      {
-        itemId: "54cb273c-ad39-4774-97fc-9693f38c8f22",
-        order: 2,
-        content: "Demo Item 2",
-        isComplete: true,
-      },
-      {
-        itemId: "6f7bc5fb-7081-420d-9666-d5f8cf08d78f",
-        order: 3,
-        content: "Demo Item 3",
-        isComplete: false,
-      },
-      {
-        itemId: "781315b3-890e-4554-ad14-df875222d12a",
-        order: 4,
-        content: "Demo Item 4",
-        isComplete: false,
-      },
-      {
-        itemId: "461c5a5b-1026-4ad5-b7f1-49d13567b543",
-        order: 5,
-        content: "Demo Item 5",
-        isComplete: false,
-      },
-      {
-        itemId: "76f57106-041d-4693-a77e-bdfce66c1781",
-        order: 6,
-        content: "Demo Item 6",
-        isComplete: false,
-      },
+      { itemId: uuidv4(), order: 1, content: "Demo Item 1", isComplete: false },
+      { itemId: uuidv4(), order: 2, content: "Demo Item 2", isComplete: true },
+      { itemId: uuidv4(), order: 3, content: "Demo Item 3", isComplete: false },
+      { itemId: uuidv4(), order: 4, content: "Demo Item 4", isComplete: true },
     ],
   },
+  // List 2: Invited user, not archived, few items
   {
-    listId: "cd22c016-8b7e-405f-8201-f47718fac216",
-    name: "Demo list 2",
+    listId: uuidv4(),
+    name: "Demo List 2",
     owner: "0b9c903e-b190-453d-bd4f-553fe5ff6389",
     archived: false,
     invitedUsers: ["5629aaef-1a1e-4430-be02-9104cc7e5544"],
     items: [
-      {
-        itemId: "07587801-0ede-4b5c-bae2-a1f4da19b36b",
-        order: 1,
-        content: "Demo Item 1",
-        isComplete: false,
-      },
-      {
-        itemId: "fae6a17f-da06-4702-bec7-d7629b77a11f",
-        order: 2,
-        content: "Demo Item 2",
-        isComplete: false,
-      },
+      { itemId: uuidv4(), order: 1, content: "Demo Item 1", isComplete: false },
+      { itemId: uuidv4(), order: 2, content: "Demo Item 2", isComplete: false },
+    ],
+  },
+  // List 3: Owned by user, archived, empty list
+  {
+    listId: uuidv4(),
+    name: "Demo List 3",
+    owner: "5629aaef-1a1e-4430-be02-9104cc7e5544",
+    archived: true,
+    invitedUsers: [],
+    items: [],
+  },
+  // List 4: Invited user, archived, many items, all completed
+  {
+    listId: uuidv4(),
+    name: "Demo List 4",
+    owner: "209fa1ea-e5fa-4b89-83e4-0a3f0d4b7553",
+    archived: true,
+    invitedUsers: [
+      "5629aaef-1a1e-4430-be02-9104cc7e5544",
+      "500cb652-c4cc-4c51-8c40-d1525d0c3926",
+    ],
+    items: [
+      { itemId: uuidv4(), order: 1, content: "Demo Item 1", isComplete: true },
+      { itemId: uuidv4(), order: 2, content: "Demo Item 2", isComplete: true },
+      { itemId: uuidv4(), order: 3, content: "Demo Item 3", isComplete: true },
+      { itemId: uuidv4(), order: 4, content: "Demo Item 4", isComplete: true },
+      { itemId: uuidv4(), order: 5, content: "Demo Item 5", isComplete: true },
+    ],
+  },
+  // List 5: Owned by user, not archived, single item
+  {
+    listId: uuidv4(),
+    name: "Demo List 5",
+    owner: "5629aaef-1a1e-4430-be02-9104cc7e5544",
+    archived: false,
+    invitedUsers: ["0b9c903e-b190-453d-bd4f-553fe5ff6389"],
+    items: [
+      { itemId: uuidv4(), order: 1, content: "Demo Item 1", isComplete: false },
+    ],
+  },
+  // List 6: Invited user, not archived, no items, multiple invited users
+  {
+    listId: uuidv4(),
+    name: "Demo List 6",
+    owner: "500cb652-c4cc-4c51-8c40-d1525d0c3926",
+    archived: false,
+    invitedUsers: [
+      "5629aaef-1a1e-4430-be02-9104cc7e5544",
+      "209fa1ea-e5fa-4b89-83e4-0a3f0d4b7553",
+      "0b9c903e-b190-453d-bd4f-553fe5ff6389",
+    ],
+    items: [],
+  },
+  // List 7: Owned by user, archived, many items, mixed completion
+  {
+    listId: uuidv4(),
+    name: "Demo List 7",
+    owner: "5629aaef-1a1e-4430-be02-9104cc7e5544",
+    archived: true,
+    invitedUsers: ["209fa1ea-e5fa-4b89-83e4-0a3f0d4b7553"],
+    items: [
+      { itemId: uuidv4(), order: 1, content: "Demo Item 1", isComplete: false },
+      { itemId: uuidv4(), order: 2, content: "Demo Item 2", isComplete: true },
+      { itemId: uuidv4(), order: 3, content: "Demo Item 3", isComplete: false },
+      { itemId: uuidv4(), order: 4, content: "Demo Item 4", isComplete: true },
+      { itemId: uuidv4(), order: 5, content: "Demo Item 5", isComplete: false },
+      { itemId: uuidv4(), order: 6, content: "Demo Item 6", isComplete: true },
+    ],
+  },
+  // List 8: Invited user, not archived, single completed item
+  {
+    listId: uuidv4(),
+    name: "Demo List 8",
+    owner: "0b9c903e-b190-453d-bd4f-553fe5ff6389",
+    archived: false,
+    invitedUsers: ["5629aaef-1a1e-4430-be02-9104cc7e5544"],
+    items: [
+      { itemId: uuidv4(), order: 1, content: "Demo Item 1", isComplete: true },
     ],
   },
 ];
