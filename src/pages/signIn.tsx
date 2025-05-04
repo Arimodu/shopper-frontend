@@ -3,7 +3,7 @@ import * as React from "react";
 import { AuthProvider, SignInPage } from "@toolpad/core/SignInPage";
 import type { Session } from "@toolpad/core/AppProvider";
 import { useNavigate } from "react-router";
-import { Alert, FormControlLabel, Stack, Switch } from "@mui/material";
+import { Alert, CircularProgress, FormControlLabel, Stack, Switch } from "@mui/material";
 import { useApi } from "../ApiContext";
 
 function Title() {
@@ -11,9 +11,39 @@ function Title() {
 }
 
 export default function SignIn() {
-  const { setSession } = useApi();
+  const { setSession, apiEnabled, setApiEnabled, getUserMe } = useApi();
   const navigate = useNavigate();
-  const [apiEnabled, setApiState] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const checkSession = async () => {
+      if (!apiEnabled) {
+        setIsLoading(false);
+        return;
+      }
+  
+      try {
+        const { user } = await getUserMe();
+        const session: Session = {
+          user: {
+            id: user._id,
+            name: user.name,
+            email: user.name,
+            image: "https://arimodu.dev/pfp.webp",
+          },
+        };
+        setSession(session);
+        navigate("/", { replace: true });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to restore session");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    checkSession();
+  }, [apiEnabled, getUserMe, navigate, setSession]);
 
   // Lets just move this here ig...
   const handleSignIn = async (provider: AuthProvider, formData: FormData, callbackUrl?: string) => {
@@ -94,7 +124,7 @@ export default function SignIn() {
     return (
       <Stack>
         <FormControlLabel
-          control={<Switch value={apiEnabled} onChange={(e, checked) => setApiState(checked)} />}
+          control={<Switch value={apiEnabled} onChange={(e, checked) => setApiEnabled(checked)} />}
           label="Enable API"
           labelPlacement="start"
         />
@@ -108,6 +138,14 @@ export default function SignIn() {
             </Alert>
           </div>
         )}
+      </Stack>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Stack justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
       </Stack>
     );
   }

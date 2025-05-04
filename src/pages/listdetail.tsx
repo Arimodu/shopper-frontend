@@ -26,12 +26,12 @@ import { Delete, Edit, Logout, PersonAdd, Clear } from "@mui/icons-material";
 import { red } from "@mui/material/colors";
 import { useApi } from "../ApiContext";
 
-export default async function ListDetail() {
+export default function ListDetail() {
   const navigate = useNavigate();
   const { listId } = useParams<{ listId: string }>();
   const {
     session,
-    getListById,
+    getList,
     setItemCompleted,
     setItemIncomplete,
     addItem,
@@ -44,7 +44,7 @@ export default async function ListDetail() {
     loading,
     error,
   } = useApi();
-  const list = await getListById(listId!);
+  const list = getList(listId!);
   const [open, setOpen] = useState(true);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [sharingDialogOpen, setSharingDialogOpen] = useState(false);
@@ -60,7 +60,7 @@ export default async function ListDetail() {
   const handleEditOpen = () => setEditDialogOpen(true);
   const handleEditClose = () => setEditDialogOpen(false);
   const handleEditSave = () => {
-    editList(newListName);
+    editList(listId!, newListName);
     setEditDialogOpen(false);
   };
 

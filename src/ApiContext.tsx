@@ -37,6 +37,7 @@ interface ApiContextValue {
   setApiEnabled: (enabled: boolean) => void;
   session: Session | null;
   setSession: (session: Session | null) => void;
+  getUserMe: () => Promise<UserMeResponse>;
   login: (name: string, password: string) => Promise<Session>;
   register: (name: string, password: string) => Promise<Session>;
   logout: () => Promise<void>;
@@ -67,6 +68,10 @@ export const ApiContext = React.createContext<ApiContextValue>({
   setApiEnabled: () => {},
   session: null,
   setSession: () => {},
+  getUserMe: async () => ({
+    user: { _id: "", name: "" },
+    lists: { owned: [], invited: [] },
+  }),
   login: async () => ({ user: { id: "", name: "", email: "" } }),
   register: async () => ({ user: { id: "", name: "", email: "" } }),
   logout: async () => {},
@@ -149,14 +154,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     console.log("Attempting API login with:", { name });
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, password }),
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password }),
+      });
 
       if (!response.ok) {
         if (response.status === 404) throw new Error("User not found");
@@ -190,7 +192,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     console.log("Attempting API register with:", { name });
     try {
       const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/auth/register",
+        "http://127.0.0.1:3000/api/v1/auth/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -221,7 +223,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async (): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock logout");
       setSession(null);
@@ -230,13 +231,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/auth/logout",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("User not logged in");
@@ -255,33 +253,29 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     name?: string,
     password?: string
   ): Promise<User> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock updateUser");
       const updatedUser: User = {
-        _id: session.user.id,
-        name: (name || session.user.name) ?? "unknown",
+        _id: session!.user!.id!,
+        name: (name || session!.user!.name) ?? "unknown",
       };
       setSession({
         ...session,
         user: {
-          ...session.user,
-          name: name || session.user.name,
-          email: name || session.user.email,
+          ...session!.user,
+          name: name || session!.user!.name,
+          email: name || session!.user!.email,
         },
       });
       return updatedUser;
     }
 
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/user/me",
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, password }),
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/user/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password }),
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("User not logged in");
@@ -291,7 +285,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
       const user = await response.json();
       setSession({
         ...session,
-        user: { ...session.user, name: user.name, email: user.name },
+        user: { ...session!.user, name: user.name, email: user.name },
       });
       return user;
     } catch (error) {
@@ -301,7 +295,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteUser = async (): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock deleteUser");
       setSession(null);
@@ -310,13 +303,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/user/me",
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/user/me", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("User not logged in");
@@ -339,13 +329,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     console.log("Fetching user data from API");
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/user/me",
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/user/me", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("User is not logged in");
@@ -381,14 +368,13 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addList = async (): Promise<string> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock addList");
       const listId = uuidv4();
       const newList: List = {
         listId,
         name: "New List",
-        owner: session.user.id,
+        owner: session!.user!.id!,
         archived: false,
         invitedUsers: [],
         items: [],
@@ -398,14 +384,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/list/create",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ listName: "New List" }),
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/list/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listName: "New List" }),
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("User not logged in");
@@ -435,7 +418,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getListById = async (listId: string): Promise<List> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock getListById");
       const list = mockData.find((l) => l.listId === listId);
@@ -445,7 +427,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `https://shopper.arimodu.dev/api/v1/list/${listId}`,
+        `http://127.0.0.1:3000/api/v1/list/${listId}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -479,7 +461,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeList = async (listId: string): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock removeList");
       setLists((prev) => prev.filter((list) => list.listId !== listId));
@@ -488,7 +469,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `https://shopper.arimodu.dev/api/v1/list/${listId}`,
+        `http://127.0.0.1:3000/api/v1/list/${listId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -512,7 +493,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     listId: string,
     updater: (list: List) => List
   ): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     const list = lists.find((l) => l.listId === listId);
     if (!list) throw new Error("List not found");
 
@@ -527,7 +507,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `https://shopper.arimodu.dev/api/v1/list/${listId}`,
+        `http://127.0.0.1:3000/api/v1/list/${listId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -576,7 +556,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     listId: string,
     itemId: string
   ): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock setItemCompleted");
       await updateList(listId, (list) => ({
@@ -590,7 +569,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `https://shopper.arimodu.dev/api/v1/item/${itemId}`,
+        `http://127.0.0.1:3000/api/v1/item/${itemId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -631,7 +610,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     listId: string,
     itemId: string
   ): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock setItemIncomplete");
       await updateList(listId, (list) => ({
@@ -645,7 +623,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `https://shopper.arimodu.dev/api/v1/item/${itemId}`,
+        `http://127.0.0.1:3000/api/v1/item/${itemId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -683,7 +661,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addItem = async (listId: string, content: string): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     const list = lists.find((l) => l.listId === listId);
     if (!list) throw new Error("List not found");
 
@@ -704,14 +681,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/item/create",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ listId, order: newItem.order, content }),
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/item/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listId, order: newItem.order, content }),
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("Not authorized");
@@ -743,7 +717,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeItem = async (listId: string, itemId: string): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock removeItem");
       await updateList(listId, (list) => ({
@@ -755,7 +728,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `https://shopper.arimodu.dev/api/v1/item/${itemId}`,
+        `http://127.0.0.1:3000/api/v1/item/${itemId}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -779,7 +752,6 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getItem = async (itemId: string): Promise<ListItem> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     if (!apiEnabled) {
       console.log("Using mock getItem");
       const list = mockData.find((l) =>
@@ -792,7 +764,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `https://shopper.arimodu.dev/api/v1/item/${itemId}`,
+        `http://127.0.0.1:3000/api/v1/item/${itemId}`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -822,10 +794,12 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     name?: string,
     owner?: string
   ): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     const list = lists.find((l) => l.listId === listId);
-    if (!list || list.owner !== session.user.id)
+    if (!list || list.owner !== session!.user!.id) {
+      console.log(JSON.stringify(session));
+      console.log(JSON.stringify(list));
       throw new Error("Not authorized");
+    }
 
     await updateList(listId, (list) => ({
       ...list,
@@ -838,20 +812,21 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     listId: string,
     archived: boolean
   ): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     const list = lists.find((l) => l.listId === listId);
-    if (!list || list.owner !== session.user.id)
+    if (!list || list.owner !== session!.user!.id) {
+      console.log(JSON.stringify(session));
+      console.log(JSON.stringify(list));
       throw new Error("Not authorized");
+    }
 
     await updateList(listId, (list) => ({ ...list, archived }));
   };
 
   const addUser = async (listId: string, userId: string): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     const list = lists.find((l) => l.listId === listId);
     if (
       !list ||
-      list.owner !== session.user.id ||
+      list.owner !== session!.user!.id ||
       list.invitedUsers.includes(userId)
     ) {
       throw new Error("Not authorized or user already invited");
@@ -867,14 +842,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/list/acl",
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ listId, userId }),
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/list/acl", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listId, userId }),
+      });
 
       if (!response.ok) {
         if (response.status === 400) throw new Error("Cannot add yourself");
@@ -907,9 +879,8 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeUser = async (listId: string, userId: string): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     const list = lists.find((l) => l.listId === listId);
-    if (!list || list.owner !== session.user.id)
+    if (!list || list.owner !== session!.user!.id)
       throw new Error("Not authorized");
 
     if (!apiEnabled) {
@@ -922,14 +893,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        "https://shopper.arimodu.dev/api/v1/list/acl",
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ listId, userId }),
-        }
-      );
+      const response = await fetch("http://127.0.0.1:3000/api/v1/list/acl", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ listId, userId }),
+      });
 
       if (!response.ok) {
         if (response.status === 400) throw new Error("Cannot remove yourself");
@@ -962,12 +930,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeSelf = async (listId: string): Promise<void> => {
-    if (!session?.user?.id) throw new Error("User not logged in");
     const list = lists.find((l) => l.listId === listId);
-    if (!list || list.owner === session.user.id)
+    if (!list || list.owner === session!.user!.id)
       throw new Error("Not authorized");
 
-    await removeUser(listId, session.user.id);
+    await removeUser(listId, session!.user!.id!);
     setLists((prev) => prev.filter((l) => l.listId !== listId));
   };
 
@@ -1019,6 +986,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     setApiEnabled,
     session,
     setSession,
+    getUserMe,
     login,
     register,
     logout,

@@ -77,8 +77,8 @@ export default function DashboardPage() {
       <Fab 
       size="large" 
       color="primary"
-      onClick={() => {
-        const newListId = addList();
+      onClick={async () => {
+        const newListId = await addList();
         navigate(`/list/${newListId}`);
       }}
       sx={{

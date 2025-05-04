@@ -15,8 +15,6 @@ import { PageContainer } from "@toolpad/core/PageContainer";
 import { useApi } from "../ApiContext";
 
 function ToolbarActionsAPI() {
-  const [selected, setSelected] = React.useState(false); // Temporary for now, later will be replaced with API state hook
-
   return (
     <Stack direction="row">
       <ThemeSwitcher />
