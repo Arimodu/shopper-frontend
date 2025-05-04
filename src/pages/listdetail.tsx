@@ -18,21 +18,20 @@ import {
   Chip,
   Avatar,
 } from "@mui/material";
-import { useSession } from "../SessionContext";
 import { useState } from "react";
 import CompletedDropdown from "../components/CompletedDropdown";
 import ItemListView from "../components/ItemListView";
-import { useList } from "../ListContext";
 import { useNavigate, useParams } from "react-router";
 import { Delete, Edit, Logout, PersonAdd, Clear } from "@mui/icons-material";
 import { red } from "@mui/material/colors";
+import { useApi } from "../ApiContext";
 
-export default function ListDetail() {
+export default async function ListDetail() {
   const navigate = useNavigate();
   const { listId } = useParams<{ listId: string }>();
-  const { session } = useSession();
   const {
-    list,
+    session,
+    getListById,
     setItemCompleted,
     setItemIncomplete,
     addItem,
@@ -44,7 +43,8 @@ export default function ListDetail() {
     removeList,
     loading,
     error,
-  } = useList();
+  } = useApi();
+  const list = await getListById(listId!);
   const [open, setOpen] = useState(true);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [sharingDialogOpen, setSharingDialogOpen] = useState(false);
@@ -68,21 +68,21 @@ export default function ListDetail() {
   const handleSharingClose = () => setSharingDialogOpen(false);
   const handleAddUser = () => {
     if (newUserId.trim()) {
-      addUser(newUserId.trim());
+      addUser(listId!, newUserId.trim());
       setNewUserId("");
     }
   };
-  const handleRemoveUser = (userId: string) => removeUser(userId);
+  const handleRemoveUser = (userId: string) => removeUser(listId!, userId);
 
   const handleLeaveOpen = () => setLeaveDialogOpen(true);
   const handleLeaveClose = () => setLeaveDialogOpen(false);
   const handleLeaveConfirm = () => {
-    removeSelf();
+    removeSelf(listId!);
     setLeaveDialogOpen(false);
     navigate(-1);
   };
   const handleDeleteConfirm = () => {
-    removeList();
+    removeList(listId!);
     setLeaveDialogOpen(false);
     navigate(-1);
   };
@@ -204,14 +204,14 @@ export default function ListDetail() {
               <ItemListView
                 itemList={list.items.filter((item) => !item.isComplete)}
                 showAddItem={true}
-                onComplete={setItemCompleted}
-                onRemove={removeItem}
-                onAdd={addItem}
+                onComplete={async (iid) => await setItemCompleted(listId!, iid)}
+                onRemove={async (iid) => await removeItem(listId!, iid)}
+                onAdd={async (cnt) => await addItem(listId!, cnt)}
               />
               <CompletedDropdown
                 itemList={list.items.filter((item) => item.isComplete)}
-                onIncomplete={setItemIncomplete}
-                onRemove={removeItem}
+                onIncomplete={async (iid) => await setItemIncomplete(listId!, iid)}
+                onRemove={async (iid) => await removeItem(listId!, iid)}
               />
             </Stack>
           </Paper>

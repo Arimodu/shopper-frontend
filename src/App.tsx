@@ -2,8 +2,7 @@ import * as React from 'react';
 import { ReactRouterAppProvider } from '@toolpad/core/react-router';
 import { Outlet, useNavigate } from 'react-router';
 import type { Session } from '@toolpad/core/AppProvider';
-import { SessionContext } from './SessionContext';
-import { ListsProvider } from './ListsContext';
+import { ApiProvider } from './ApiContext';
 
 const BRANDING = {
   title: 'Shopper Web',
@@ -25,16 +24,14 @@ export default function App() {
   const sessionContextValue = React.useMemo(() => ({ session, setSession }), [session, setSession]);
 
   return (
-    <SessionContext.Provider value={sessionContextValue}>
+    <ApiProvider>
       <ReactRouterAppProvider
         branding={BRANDING}
         session={session}
         authentication={{ signIn, signOut }}
       >
-        <ListsProvider>
-          <Outlet />
-        </ListsProvider>
+        <Outlet />
       </ReactRouterAppProvider>
-    </SessionContext.Provider>
+    </ApiProvider>
   );
 }

@@ -11,20 +11,17 @@ import {
   Checkbox,
 } from "@mui/material";
 import { useNavigate } from "react-router";
-import { List as ListCtx } from "../ListContext";
-import { useSession } from "../SessionContext";
+import { List as apiList, useApi } from "../ApiContext";
 import { MoreVert } from "@mui/icons-material";
 import React from "react";
-import { useLists } from "../ListsContext";
 
 interface ListTileProps {
-  list: ListCtx;
+  list: apiList;
 }
 
 export default function ListTile({ list }: ListTileProps) {
   const navigate = useNavigate();
-  const { session } = useSession();
-  const { updateList, removeList } = useLists();
+  const { session, updateList, removeList } = useApi();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const menuClick = (event: React.MouseEvent<HTMLButtonElement>) => {

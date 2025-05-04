@@ -3,15 +3,12 @@ import { PageContainer } from "@toolpad/core";
 import { Stack, Button, Skeleton, IconButton, Fab } from "@mui/material";
 import { Outlet, useNavigate } from "react-router";
 import ListTileView from "../components/ListTileView";
-import { useSession } from "../SessionContext";
-import { useLists } from "../ListsContext";
 import { Add } from "@mui/icons-material";
-import { indigo } from "@mui/material/colors";
+import { useApi } from "../ApiContext";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { session } = useSession();
-  const { lists, addList, removeList, updateList, loading, error } = useLists();
+  const { session, lists, addList, removeList, updateList, loading, error } = useApi();
 
   if (loading) {
     return (

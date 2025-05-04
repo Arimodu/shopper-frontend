@@ -12,7 +12,7 @@ import ApiIcon from "../assets/ApiIcon";
 import ApiOffIcon from "../assets/ApiOffIcon";
 import { DashboardLayout, ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 import { PageContainer } from "@toolpad/core/PageContainer";
-import { useSession } from "../SessionContext";
+import { useApi } from "../ApiContext";
 
 function ToolbarActionsAPI() {
   const [selected, setSelected] = React.useState(false); // Temporary for now, later will be replaced with API state hook
@@ -25,7 +25,7 @@ function ToolbarActionsAPI() {
 }
 
 export default function Layout() {
-  const { session } = useSession();
+  const { session } = useApi();
   const location = useLocation();
 
   if (!session) {

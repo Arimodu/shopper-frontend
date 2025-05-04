@@ -9,10 +9,10 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Add, Clear } from "@mui/icons-material";
-import { ListItem as ctxListItem } from "../ListContext";
+import { ListItem as apiListItem } from "../ApiContext";
 
 export interface ItemListViewProps {
-  itemList: ctxListItem[];
+  itemList: apiListItem[];
   showAddItem?: boolean;
   onComplete: (itemId: string) => void;
   onRemove: (itemId: string) => void;
@@ -37,7 +37,7 @@ function ItemListView({
 
   return (
     <List>
-      {itemList.map((item: ctxListItem) => (
+      {itemList.map((item: apiListItem) => (
         <ListItem
           key={item.itemId}
           secondaryAction={

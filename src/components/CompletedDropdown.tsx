@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Collapse, Button, ListItem, Checkbox, IconButton, ListItemText } from "@mui/material";
 import { Clear } from "@mui/icons-material";
-import { ListItem as ctxListItem } from "../ListContext";
+import { ListItem as apiListItem } from "../ApiContext";
 
 interface CompletedDropdownProps {
-  itemList: ctxListItem[];
+  itemList: apiListItem[];
   onIncomplete: (itemId: string) => void;
   onRemove: (itemId: string) => void;
 }
