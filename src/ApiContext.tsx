@@ -154,7 +154,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     console.log("Attempting API login with:", { name });
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/auth/login", {
+      const response = await fetch("/api/v1/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, password }),
@@ -191,14 +191,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     console.log("Attempting API register with:", { name });
     try {
-      const response = await fetch(
-        "http://127.0.0.1:3000/api/v1/auth/register",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, password }),
-        }
-      );
+      const response = await fetch("/api/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, password }),
+      });
 
       if (!response.ok) {
         if (response.status === 409) throw new Error("Username already exists");
@@ -231,7 +228,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/auth/logout", {
+      const response = await fetch("/api/v1/auth/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
@@ -271,7 +268,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/user/me", {
+      const response = await fetch("/api/v1/user/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, password }),
@@ -303,7 +300,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/user/me", {
+      const response = await fetch("/api/v1/user/me", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -329,7 +326,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
 
     console.log("Fetching user data from API");
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/user/me", {
+      const response = await fetch("/api/v1/user/me", {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
@@ -384,7 +381,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/list/create", {
+      const response = await fetch("/api/v1/list/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listName: "New List" }),
@@ -426,13 +423,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:3000/api/v1/list/${listId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch(`/api/v1/list/${listId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("Not authorized");
@@ -468,13 +462,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:3000/api/v1/list/${listId}`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch(`/api/v1/list/${listId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("Not authorized");
@@ -506,18 +497,15 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:3000/api/v1/list/${listId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: updatedList.name,
-            owner: updatedList.owner,
-            archived: updatedList.archived,
-          }),
-        }
-      );
+      const response = await fetch(`/api/v1/list/${listId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: updatedList.name,
+          owner: updatedList.owner,
+          archived: updatedList.archived,
+        }),
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("Not authorized");
@@ -568,14 +556,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:3000/api/v1/item/${itemId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ isComplete: true }),
-        }
-      );
+      const response = await fetch(`/api/v1/item/${itemId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isComplete: true }),
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("Not authorized");
@@ -622,14 +607,11 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:3000/api/v1/item/${itemId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ isComplete: false }),
-        }
-      );
+      const response = await fetch(`/api/v1/item/${itemId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isComplete: false }),
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("Not authorized");
@@ -681,7 +663,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/item/create", {
+      const response = await fetch("/api/v1/item/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listId, order: newItem.order, content }),
@@ -727,13 +709,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:3000/api/v1/item/${itemId}`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch(`/api/v1/item/${itemId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!response.ok) {
         if (response.status === 401) throw new Error("Not authorized");
@@ -763,13 +742,10 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:3000/api/v1/item/${itemId}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const response = await fetch(`/api/v1/item/${itemId}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (!response.ok) {
         if (response.status === 404) throw new Error("Item not found");
@@ -842,7 +818,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/list/acl", {
+      const response = await fetch("/api/v1/list/acl", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listId, userId }),
@@ -893,7 +869,7 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:3000/api/v1/list/acl", {
+      const response = await fetch("/api/v1/list/acl", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listId, userId }),
