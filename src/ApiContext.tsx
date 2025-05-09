@@ -38,9 +38,9 @@ interface ApiContextValue {
   session: Session | null;
   setSession: (session: Session | null) => void;
   getUserMe: () => Promise<UserMeResponse>;
-  login: (name: string, password: string) => Promise<Session>;
+  signIn: (name: string, password: string) => Promise<Session>;
   register: (name: string, password: string) => Promise<Session>;
-  logout: () => Promise<void>;
+  signOut: () => Promise<void>;
   updateUser: (name?: string, password?: string) => Promise<User>;
   deleteUser: () => Promise<void>;
   lists: List[];
@@ -72,9 +72,9 @@ export const ApiContext = React.createContext<ApiContextValue>({
     user: { _id: "", name: "" },
     lists: { owned: [], invited: [] },
   }),
-  login: async () => ({ user: { id: "", name: "", email: "" } }),
+  signIn: async () => ({ user: { id: "", name: "", email: "" } }),
   register: async () => ({ user: { id: "", name: "", email: "" } }),
-  logout: async () => {},
+  signOut: async () => {},
   updateUser: async () => ({ _id: "", name: "" }),
   deleteUser: async () => {},
   lists: [],
@@ -963,9 +963,9 @@ export function ApiProvider({ children }: { children: React.ReactNode }) {
     session,
     setSession,
     getUserMe,
-    login,
+    signIn: login,
     register,
-    logout,
+    signOut: logout,
     updateUser,
     deleteUser,
     lists,

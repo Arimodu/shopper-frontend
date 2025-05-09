@@ -1,0 +1,47 @@
+{
+  "listDetail": {
+    "errorNoId": "Chyba: Nebylo poskytnuto ID seznamu",
+    "listNotFound": "Seznam nenalezen",
+    "sharing": "Sdílení",
+    "editList": "Upravit seznam",
+    "listName": "Název seznamu",
+    "owner": "Vlastník",
+    "ownerNotEditable": "Převod vlastnictví není implementován",
+    "cancel": "Zrušit",
+    "save": "Uložit",
+    "sharingSettings": "Nastavení sdílení",
+    "invitedUsers": "Pozvaní uživatelé:",
+    "noInvitedUsers": "Žádní pozvaní uživatelé",
+    "apiNote": "Poznámka: Tento dialog zavolá API /v1/users/ pro získání uživatelských jmen a obrázků.",
+    "userIdToInvite": "ID uživatele k pozvání",
+    "invite": "Pozvat",
+    "close": "Zavřít",
+    "deleteList": "Smazat seznam",
+    "leaveList": "Opustit seznam",
+    "deleteConfirm": "Opravdu chcete smazat tento seznam? Tuto akci nelze vrátit zpět.",
+    "leaveConfirm": "Opravdu chcete opustit tento seznam?",
+    "delete": "Smazat",
+    "leave": "Opustit"
+  },
+  "dashboardPage": {
+    "yourLists": "Vaše seznamy",
+    "invitedLists": "Pozvané seznamy",
+    "archivedLists": "Archivované seznamy",
+    "noListsFound": "Nebyly nalezeny žádné seznamy"
+  },
+  "listTile": {
+    "you": "vy",
+    "unArchive": "Zrušit archivaci",
+    "archive": "Archivovat",
+    "delete": "Smazat",
+    "moreItems": "... a {{count}} další",
+    "owner": "Vlastník"
+  },
+  "itemListView": {
+    "newItem": "Nová položka"
+  },
+  "completedDropdown": {
+    "hideCompleted": "Skrýt dokončené",
+    "showCompleted": "Zobrazit dokončené ({{count}})"
+  }
+}

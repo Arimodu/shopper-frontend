@@ -1,0 +1,47 @@
+{
+  "listDetail": {
+    "errorNoId": "Fehler: Keine Listen-ID angegeben",
+    "listNotFound": "Liste nicht gefunden",
+    "sharing": "Teilen",
+    "editList": "Liste bearbeiten",
+    "listName": "Listenname",
+    "owner": "Eigentümer",
+    "ownerNotEditable": "Übertragung des Eigentums nicht implementiert",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "sharingSettings": "Teilungseinstellungen",
+    "invitedUsers": "Eingeladene Benutzer:",
+    "noInvitedUsers": "Keine eingeladenen Benutzer",
+    "apiNote": "Hinweis: Dieser Dialog ruft die API /v1/users/ auf, um Benutzernamen und Bilder zu erhalten.",
+    "userIdToInvite": "Benutzer-ID zum Einladen",
+    "invite": "Einladen",
+    "close": "Schließen",
+    "deleteList": "Liste löschen",
+    "leaveList": "Liste verlassen",
+    "deleteConfirm": "Sind Sie sicher, dass Sie diese Liste löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "leaveConfirm": "Sind Sie sicher, dass Sie diese Liste verlassen möchten?",
+    "delete": "Löschen",
+    "leave": "Verlassen"
+  },
+  "dashboardPage": {
+    "yourLists": "Ihre Listen",
+    "invitedLists": "Eingeladene Listen",
+    "archivedLists": "Archivierte Listen",
+    "noListsFound": "Keine Listen gefunden"
+  },
+  "listTile": {
+    "you": "Sie",
+    "unArchive": "Archivierung aufheben",
+    "archive": "Archivieren",
+    "delete": "Löschen",
+    "moreItems": "... und {{count}} weitere",
+    "owner": "Eigentümer"
+  },
+  "itemListView": {
+    "newItem": "Neues Element"
+  },
+  "completedDropdown": {
+    "hideCompleted": "Abgeschlossene ausblenden",
+    "showCompleted": "Abgeschlossene anzeigen ({{count}})"
+  }
+}

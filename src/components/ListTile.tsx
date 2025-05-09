@@ -14,12 +14,14 @@ import { useNavigate } from "react-router";
 import { List as apiList, useApi } from "../ApiContext";
 import { MoreVert } from "@mui/icons-material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface ListTileProps {
   list: apiList;
 }
 
 export default function ListTile({ list }: ListTileProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { session, updateList, removeList } = useApi();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -41,7 +43,7 @@ export default function ListTile({ list }: ListTileProps) {
     <Paper
       elevation={2}
       sx={{
-        width: 250,
+        width: theme => `clamp(150px, calc(50% - ${theme.spacing(1)}), 250px)`,
         height: 250,
         borderRadius: 2,
         padding: 2,
@@ -88,7 +90,7 @@ export default function ListTile({ list }: ListTileProps) {
                 setAnchorEl(null);
               }}
             >
-              {list.archived ? "Un-Archive" : "Archive"}
+              {list.archived ? t("listTile.unArchive") : t("listTile.archive")}
             </MenuItem>
             <MenuItem
               onClick={(e) => {
@@ -97,7 +99,7 @@ export default function ListTile({ list }: ListTileProps) {
                 setAnchorEl(null);
               }}
             >
-              Delete
+              {t("listTile.delete")}
             </MenuItem>
           </Menu>
         </div>
@@ -124,7 +126,7 @@ export default function ListTile({ list }: ListTileProps) {
           ))}
         {list.items.length > 3 && (
           <ListItem>
-            <ListItemText primary={`... and ${list.items.length - 3} more`} />
+            <ListItemText primary={t("listTile.moreItems", { count: list.items.length - 3 })} />
           </ListItem>
         )}
       </List>
@@ -138,7 +140,7 @@ export default function ListTile({ list }: ListTileProps) {
         <Stack justifyContent="space-between" alignItems="Left">
           <Typography variant="subtitle2">{list.name}</Typography>
           <Typography variant="caption" color="textSecondary" noWrap>
-            Owner: {list.owner == session?.user?.id ? "you" : list.owner}
+          {t("listTile.owner")}: {list.owner == session?.user?.id ? t("listTile.you") : list.owner}
           </Typography>
         </Stack>
       </Paper>

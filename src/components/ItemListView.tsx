@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { Add, Clear } from "@mui/icons-material";
 import { ListItem as apiListItem } from "../ApiContext";
+import { useTranslation } from "react-i18next";
 
 export interface ItemListViewProps {
   itemList: apiListItem[];
@@ -26,6 +27,7 @@ function ItemListView({
   onRemove,
   onAdd,
 }: ItemListViewProps) {
+  const { t } = useTranslation();
   const [newItemContent, setNewItemContent] = useState("");
 
   const handleAddItem = () => {
@@ -64,7 +66,7 @@ function ItemListView({
             </IconButton>
             <TextField
               variant="standard"
-              label="New Item"
+              label={t("itemListView.newItem")}
               margin="normal"
               size="small"
               value={newItemContent}

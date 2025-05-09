@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Collapse, Button, ListItem, Checkbox, IconButton, ListItemText } from "@mui/material";
 import { Clear } from "@mui/icons-material";
 import { ListItem as apiListItem } from "../ApiContext";
+import { useTranslation } from "react-i18next";
 
 interface CompletedDropdownProps {
   itemList: apiListItem[];
@@ -10,12 +11,13 @@ interface CompletedDropdownProps {
 }
 
 function CompletedDropdown({ itemList, onIncomplete, onRemove }: CompletedDropdownProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   return (
     <div>
       <Button onClick={() => setOpen(!open)}>
-        {open ? "Hide Completed" : `Show Completed (${itemList.length})`}
+        {open ? t("completedDropdown.hideCompleted") : t("completedDropdown.showCompleted", { count: itemList.length })}
       </Button>
       <Collapse in={open}>
         {itemList.map((item) => (

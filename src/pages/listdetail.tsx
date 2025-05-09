@@ -3,7 +3,6 @@ import {
   Paper,
   Stack,
   Typography,
-  Container,
   Button,
   IconButton,
   Skeleton,
@@ -17,18 +16,30 @@ import {
   ListItemText,
   Chip,
   Avatar,
+  useMediaQuery,
+  Menu,
 } from "@mui/material";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import CompletedDropdown from "../components/CompletedDropdown";
 import ItemListView from "../components/ItemListView";
 import { useNavigate, useParams } from "react-router";
-import { Delete, Edit, Logout, PersonAdd, Clear } from "@mui/icons-material";
+import {
+  Delete,
+  Edit,
+  Logout,
+  PersonAdd,
+  Clear,
+  ArrowBack,
+  MoreVert,
+} from "@mui/icons-material";
 import { red } from "@mui/material/colors";
 import { useApi } from "../ApiContext";
 
 export default function ListDetail() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const { listId } = useParams<{ listId: string }>();
+  const { listId } = useParams();
   const {
     session,
     getList,
@@ -51,6 +62,14 @@ export default function ListDetail() {
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [newListName, setNewListName] = useState(list?.name || "");
   const [newUserId, setNewUserId] = useState("");
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const isFullScreen = useMediaQuery("(max-width:600px)");
+
+  const menuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+    setMenuOpen(true);
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -87,172 +106,194 @@ export default function ListDetail() {
     navigate(-1);
   };
 
-  if (!listId) {
-    return (
-      <Modal open={open} onClose={handleClose}>
-        <Container
-          maxWidth="sm"
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <Paper variant="outlined" sx={{ padding: 3, borderRadius: 2 }}>
-            <Typography>Error: No list ID provided</Typography>
-          </Paper>
-        </Container>
-      </Modal>
-    );
-  }
+  const isOwner = session?.user?.id === list?.owner;
 
-  if (loading) {
+  const modalContent = () => {
+    if (!listId) {
+      return <Typography>{t("listDetail.errorNoId")}</Typography>;
+    }
+
+    if (loading) {
+      return (
+        <Stack>
+          <Skeleton variant="rectangular" />
+          <Skeleton variant="text" />
+          <Skeleton variant="text" />
+          <Skeleton variant="text" />
+        </Stack>
+      );
+    }
+
+    if (error || !list) {
+      return <Typography color="error">{error || t("listDetail.listNotFound")}</Typography>;
+    }
+
     return (
-      <Modal open={open} onClose={handleClose}>
-        <Container
-          maxWidth="sm"
+      <Stack>
+        <Stack
+          direction="row"
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            justifyContent: isFullScreen ? "center" : "space-between",
+            alignItems: "center",
+            position: "relative",
           }}
         >
-          <Paper variant="outlined" sx={{ padding: 3, borderRadius: 2 }}>
-            <Stack>
-              <Skeleton variant="rectangular" />
-              <Skeleton variant="text" />
-              <Skeleton variant="text" />
-              <Skeleton variant="text" />
+          {isFullScreen && (
+            <IconButton
+              onClick={handleClose}
+              sx={{ position: "absolute", left: 0 }}
+            >
+              <ArrowBack />
+            </IconButton>
+          )}
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              alignItems: "center",
+              justifyContent: isFullScreen ? "center" : "flex-start",
+            }}
+          >
+            <Typography variant="h5">{list.name}</Typography>
+            {isOwner && !isFullScreen && (
+              <IconButton onClick={handleEditOpen}>
+                <Edit />
+              </IconButton>
+            )}
+          </Stack>
+          {isFullScreen && (
+            <IconButton
+              onClick={menuClick}
+              sx={{ position: "absolute", right: 0 }}
+            >
+              <MoreVert />
+            </IconButton>
+          )}
+          {isFullScreen && (
+            <Menu
+              id="basic-menu"
+              anchorEl={menuAnchorEl}
+              open={menuOpen}
+              onClose={() => setMenuOpen(false)}
+              slotProps={{
+                list: { "aria-labelledby": "basic-button" },
+              }}
+            >
+              <Stack spacing={0}>
+                <IconButton onClick={handleEditOpen}>
+                  <Edit />
+                </IconButton>
+                <IconButton onClick={handleSharingOpen}>
+                  <PersonAdd />
+                </IconButton>
+                <IconButton onClick={handleLeaveOpen}>
+                  {isOwner ? (
+                    <Delete sx={{ color: red[500] }} />
+                  ) : (
+                    <Logout sx={{ color: red[500] }} />
+                  )}
+                </IconButton>
+              </Stack>
+            </Menu>
+          )}
+          {!isFullScreen && (
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant="outlined"
+                endIcon={<PersonAdd />}
+                onClick={handleSharingOpen}
+              >
+                {t("listDetail.sharing")}
+              </Button>
+              <IconButton onClick={handleLeaveOpen}>
+                {isOwner ? (
+                  <Delete sx={{ color: red[500] }} />
+                ) : (
+                  <Logout sx={{ color: red[500] }} />
+                )}
+              </IconButton>
             </Stack>
-          </Paper>
-        </Container>
-      </Modal>
+          )}
+        </Stack>
+        <ItemListView
+          itemList={list.items.filter((item) => !item.isComplete)}
+          showAddItem={true}
+          onComplete={async (iid) => await setItemCompleted(listId, iid)}
+          onRemove={async (iid) => await removeItem(listId, iid)}
+          onAdd={async (cnt) => await addItem(listId, cnt)}
+        />
+        <CompletedDropdown
+          itemList={list.items.filter((item) => item.isComplete)}
+          onIncomplete={async (iid) => await setItemIncomplete(listId, iid)}
+          onRemove={async (iid) => await removeItem(listId, iid)}
+        />
+      </Stack>
     );
-  }
-
-  if (error || !list) {
-    return (
-      <Modal open={open} onClose={handleClose}>
-        <Container
-          maxWidth="sm"
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          <Paper variant="outlined" sx={{ padding: 3, borderRadius: 2 }}>
-            <Typography color="error">{error || "List not found"}</Typography>
-          </Paper>
-        </Container>
-      </Modal>
-    );
-  }
-
-  const isOwner = session?.user?.id === list.owner;
+  };
 
   return (
     <>
       <Modal open={open} onClose={handleClose}>
-        <Container
-          maxWidth="sm"
+        <Paper
+          variant="outlined"
           sx={{
+            padding: 3,
+            borderRadius: 2,
+            width: "100%",
+            maxWidth: "600px",
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
+            ...(isFullScreen && {
+              maxWidth: "100%",
+              height: "100vh",
+              borderRadius: 0,
+              top: 0,
+              left: 0,
+              transform: "none",
+            }),
           }}
         >
-          <Paper variant="outlined" sx={{ padding: 3, borderRadius: 2 }}>
-            <Stack>
-              <Stack
-                direction="row"
-                sx={{ justifyContent: "space-between", alignItems: "center" }}
-              >
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ alignItems: "center" }}
-                >
-                  <Typography variant="h5">{list.name}</Typography>
-                  {isOwner && (
-                    <IconButton onClick={handleEditOpen}>
-                      <Edit />
-                    </IconButton>
-                  )}
-                </Stack>
-                <Stack direction="row" spacing={1}>
-                  <Button
-                    variant="outlined"
-                    endIcon={<PersonAdd />}
-                    onClick={handleSharingOpen}
-                  >
-                    Sharing
-                  </Button>
-                  <IconButton onClick={handleLeaveOpen}>
-                    {isOwner ? (
-                      <Delete sx={{ color: red[500] }} />
-                    ) : (
-                      <Logout sx={{ color: red[500] }} />
-                    )}
-                  </IconButton>
-                </Stack>
-              </Stack>
-              <ItemListView
-                itemList={list.items.filter((item) => !item.isComplete)}
-                showAddItem={true}
-                onComplete={async (iid) => await setItemCompleted(listId!, iid)}
-                onRemove={async (iid) => await removeItem(listId!, iid)}
-                onAdd={async (cnt) => await addItem(listId!, cnt)}
-              />
-              <CompletedDropdown
-                itemList={list.items.filter((item) => item.isComplete)}
-                onIncomplete={async (iid) => await setItemIncomplete(listId!, iid)}
-                onRemove={async (iid) => await removeItem(listId!, iid)}
-              />
-            </Stack>
-          </Paper>
-        </Container>
+          {modalContent()}
+        </Paper>
       </Modal>
 
       {isOwner && (
         <Dialog open={editDialogOpen} onClose={handleEditClose}>
-          <DialogTitle>Edit List</DialogTitle>
+          <DialogTitle>{t("listDetail.editList")}</DialogTitle>
           <DialogContent>
             <TextField
               autoFocus
               margin="dense"
-              label="List Name"
+              label={t("listDetail.listName")}
               fullWidth
               value={newListName}
               onChange={(e) => setNewListName(e.target.value)}
             />
             <TextField
               margin="dense"
-              label="Owner"
+              label={t("listDetail.owner")}
               fullWidth
-              value={list.owner}
+              value={list?.owner || ""}
               disabled
-              helperText="Transfer ownership not implemented"
+              helperText={t("listDetail.ownerNotEditable")}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleEditClose}>Cancel</Button>
+            <Button onClick={handleEditClose}>{t("listDetail.cancel")}</Button>
             <Button onClick={handleEditSave} disabled={!newListName.trim()}>
-              Save
+              {t("listDetail.save")}
             </Button>
           </DialogActions>
         </Dialog>
       )}
 
       <Dialog open={sharingDialogOpen} onClose={handleSharingClose}>
-        <DialogTitle>Sharing Settings</DialogTitle>
+        <DialogTitle>{t("listDetail.sharingSettings")}</DialogTitle>
         <DialogContent>
           <Typography variant="subtitle1">
-            Owner:{!isOwner && list.owner}
+            {t("listDetail.owner")}:{!isOwner && list?.owner}
             {isOwner && (
               <Chip
                 avatar={<Avatar src={session?.user?.image || ""} />}
@@ -261,10 +302,10 @@ export default function ListDetail() {
               />
             )}
           </Typography>
-          <Typography variant="subtitle1">Invited Users:</Typography>
+          <Typography variant="subtitle1">{t("listDetail.invitedUsers")}</Typography>
           <List>
-            {list.invitedUsers.length > 0 ? (
-              list.invitedUsers.map((userId) =>
+            {list?.invitedUsers?.length! > 0 ? (
+              list?.invitedUsers.map((userId) =>
                 userId === session?.user?.id ? (
                   <ListItem key={userId}>
                     <Chip
@@ -293,51 +334,50 @@ export default function ListDetail() {
               )
             ) : (
               <ListItem>
-                <ListItemText primary="No invited users" />
+                <ListItemText primary={t("listDetail.noInvitedUsers")} />
               </ListItem>
             )}
             <Typography sx={{ opacity: "50%" }}>
-              Note: This dialog will call the /v1/users/ api to get usernames
-              and images.
+              {t("listDetail.apiNote")}
             </Typography>
           </List>
           {isOwner && (
             <Stack direction="row" spacing={1} alignItems="center">
               <TextField
-                label="User ID to Invite"
+                label={t("listDetail.userIdToInvite")}
                 value={newUserId}
                 onChange={(e) => setNewUserId(e.target.value)}
                 fullWidth
               />
               <Button onClick={handleAddUser} disabled={!newUserId.trim()}>
-                Invite
+                {t("listDetail.invite")}
               </Button>
             </Stack>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleSharingClose}>Close</Button>
+          <Button onClick={handleSharingClose}>{t("listDetail.close")}</Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={leaveDialogOpen} onClose={handleLeaveClose}>
-        <DialogTitle>{isOwner ? "Delete List" : "Leave List"}</DialogTitle>
+        <DialogTitle>{isOwner ? t("listDetail.deleteList") : t("listDetail.leaveList")}</DialogTitle>
         <DialogContent>
           <Typography>
             {isOwner
-              ? "Are you sure you want to delete this list? This action cannot be undone."
-              : "Are you sure you want to leave this list?"}
+              ? t("listDetail.deleteConfirm")
+              : t("listDetail.leaveConfirm")}
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleLeaveClose}>Cancel</Button>
+          <Button onClick={handleLeaveClose}>{t("listDetail.cancel")}</Button>
           {isOwner ? (
             <Button onClick={handleDeleteConfirm} color="error">
-              Delete
+              {t("listDetail.delete")}
             </Button>
           ) : (
             <Button onClick={handleLeaveConfirm} color="error">
-              Leave
+              {t("listDetail.leave")}
             </Button>
           )}
         </DialogActions>

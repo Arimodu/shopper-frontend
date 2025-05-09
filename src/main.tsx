@@ -1,46 +1,38 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router';
-import App from './App';
-import Layout from './layouts/dashboard';
-import DashboardPage from './pages';
-import SignInPage from './pages/signIn';
-import ListDetailPage from './pages/listdetail'
+import * as React from "react";
+import * as ReactDOM from "react-dom/client";
+import { createBrowserRouter, RouterProvider } from "react-router";
+import App from "./App";
+import DashboardPage from "./pages";
+import SignInPage from "./pages/signIn";
+import ListDetailPage from "./pages/listdetail";
+import { ApiProvider } from "./ApiContext";
 
 const router = createBrowserRouter([
   {
     Component: App,
     children: [
       {
-        path: '/',
-        Component: Layout,
+        path: "/",
+        Component: DashboardPage,
         children: [
           {
-            path: '/',
-            Component: DashboardPage,
-            children: [
-              {
-              path: 'list/:listId',
-              Component: ListDetailPage,
-            },
-            ]
+            path: "list/:listId",
+            Component: ListDetailPage,
           },
-          /*{
-            path: '/orders',
-            Component: OrdersPage,
-          },*/
         ],
       },
       {
-        path: '/sign-in',
+        path: "/sign-in",
         Component: SignInPage,
       },
     ],
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>,
+    <ApiProvider>
+      <RouterProvider router={router} />
+    </ApiProvider>
+  </React.StrictMode>
 );

@@ -1,0 +1,47 @@
+{
+  "listDetail": {
+    "errorNoId": "Error: No list ID provided",
+    "listNotFound": "List not found",
+    "sharing": "Sharing",
+    "editList": "Edit List",
+    "listName": "List Name",
+    "owner": "Owner",
+    "ownerNotEditable": "Transfer ownership not implemented",
+    "cancel": "Cancel",
+    "save": "Save",
+    "sharingSettings": "Sharing Settings",
+    "invitedUsers": "Invited Users:",
+    "noInvitedUsers": "No invited users",
+    "apiNote": "Note: This dialog will call the /v1/users/ api to get usernames and images.",
+    "userIdToInvite": "User ID to Invite",
+    "invite": "Invite",
+    "close": "Close",
+    "deleteList": "Delete List",
+    "leaveList": "Leave List",
+    "deleteConfirm": "Are you sure you want to delete this list? This action cannot be undone.",
+    "leaveConfirm": "Are you sure you want to leave this list?",
+    "delete": "Delete",
+    "leave": "Leave"
+  },
+  "dashboardPage": {
+    "yourLists": "Your Lists",
+    "invitedLists": "Invited Lists",
+    "archivedLists": "Archived Lists",
+    "noListsFound": "No lists found"
+  },
+  "listTile": {
+    "you": "you",
+    "unArchive": "Un-Archive",
+    "archive": "Archive",
+    "delete": "Delete",
+    "moreItems": "... and {{count}} more",
+    "owner": "Owner"
+  },
+  "itemListView": {
+    "newItem": "New Item"
+  },
+  "completedDropdown": {
+    "hideCompleted": "Hide Completed",
+    "showCompleted": "Show Completed ({{count}})"
+  }
+}
